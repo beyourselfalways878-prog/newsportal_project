@@ -67,11 +67,54 @@ export const legalData = {
     },
      about: {
       title: 'About Us',
-      content: '<p>About Us page content coming soon!</p>'
+      content: `
+        <h3>Welcome to 24x7 Indian News</h3>
+        <p>Your trusted source for 24/7 news coverage from India and around the world. We are committed to delivering accurate, unbiased, and timely news in Hindi, focusing on politics, business, sports, entertainment, technology, and more.</p>
+        
+        <h4>Our Mission</h4>
+        <p>To provide comprehensive news coverage that informs, educates, and engages our audience with integrity and professionalism.</p>
+        
+        <h4>What We Offer</h4>
+        <ul>
+          <li>Breaking news alerts</li>
+          <li>In-depth analysis and opinion pieces</li>
+          <li>Regional news from across India</li>
+          <li>Live updates on major events</li>
+          <li>User-friendly interface with dark/light mode</li>
+        </ul>
+        
+        <h4>Our Team</h4>
+        <p>We are a dedicated team of journalists, editors, and tech professionals working tirelessly to bring you the latest news.</p>
+        
+        <p>For advertising or partnerships, contact us at divineink@24x7indiannews.online</p>
+      `
     },
     contact: {
       title: 'Contact Us',
-      content: '<p>Contact Us page content coming soon!</p>'
+      content: `
+        <h3>Get in Touch</h3>
+        <p>We'd love to hear from you! Whether you have questions, feedback, or partnership opportunities, feel free to reach out.</p>
+        
+        <h4>Contact Information</h4>
+        <ul>
+          <li><strong>Email:</strong> divineink@24x7indiannews.online</li>
+          <li><strong>Phone:</strong> +91-XXX-XXXXXXX (Available 9 AM - 6 PM IST)</li>
+          <li><strong>Address:</strong> Bakshi Ka Talab, Lucknow</li>
+        </ul>
+        
+        <h4>Follow Us</h4>
+        <p>Stay connected on social media for the latest updates:</p>
+        <ul>
+          <li>Twitter: @newsindian24x7</li>
+          <li>Facebook: facebook.com/newsindian24x7</li>
+          <li>Instagram: instagram.com/newsindian24x7</li>
+        </ul>
+        
+        <h4>Newsletter</h4>
+        <p>Subscribe to our newsletter for daily news summaries delivered to your inbox.</p>
+        
+        <p><em>For press inquiries or advertising, please email us directly.</em></p>
+      `
     }
   },
   hi: {
@@ -133,11 +176,54 @@ export const legalData = {
     },
      about: {
       title: 'हमारे बारे में',
-      content: '<p>हमारे बारे में पृष्ठ की सामग्री जल्द ही आ रही है!</p>'
+      content: `
+        <h3>24x7 Indian News में आपका स्वागत है</h3>
+        <p>भारत और दुनिया भर से 24/7 समाचार कवरेज के लिए आपका विश्वसनीय स्रोत। हम हिंदी में सटीक, निष्पक्ष और समय पर समाचार प्रदान करने के लिए प्रतिबद्ध हैं, जिसमें राजनीति, व्यापार, खेल, मनोरंजन, तकनीक और बहुत कुछ शामिल है।</p>
+        
+        <h4>हमारा मिशन</h4>
+        <p>अखंडता और पेशेवरता के साथ सूचित करने, शिक्षित करने और हमारे दर्शकों को जोड़ने वाला व्यापक समाचार कवरेज प्रदान करना।</p>
+        
+        <h4>हम क्या प्रदान करते हैं</h4>
+        <ul>
+          <li>ब्रेकिंग न्यूज़ अलर्ट</li>
+          <li>गहन विश्लेषण और राय लेख</li>
+          <li>पूरे भारत से क्षेत्रीय समाचार</li>
+          <li>बड़े घटनाओं पर लाइव अपडेट</li>
+          <li>डार्क/लाइट मोड के साथ उपयोगकर्ता-अनुकूल इंटरफेस</li>
+        </ul>
+        
+        <h4>हमारी टीम</h4>
+        <p>हम पत्रकारों, संपादकों और तकनीकी पेशेवरों की एक समर्पित टीम हैं जो आपको नवीनतम समाचार लाने के लिए दिन-रात काम कर रही है।</p>
+        
+        <p>विज्ञापन या साझेदारी के लिए, हमें divineink@24x7indiannews.online पर संपर्क करें</p>
+      `
     },
     contact: {
       title: 'संपर्क करें',
-      content: '<p>हमसे संपर्क करें पृष्ठ की सामग्री जल्द ही आ रही है!</p>'
+      content: `
+        <h3>हमसे संपर्क करें</h3>
+        <p>हम आपसे सुनना पसंद करेंगे! चाहे आपके पास प्रश्न हों, प्रतिक्रिया हो या साझेदारी के अवसर, बेझिझक संपर्क करें।</p>
+        
+        <h4>संपर्क जानकारी</h4>
+        <ul>
+          <li><strong>ईमेल:</strong> divineink@24x7indiannews.online</li>
+          <li><strong>फोन:</strong> +91-XXX-XXXXXXX (सुबह 9 बजे से शाम 6 बजे तक उपलब्ध, IST)</li>
+          <li><strong>पता:</strong> बख्सी का तालाब, लखनऊ</li>
+        </ul>
+        
+        <h4>हमें फॉलो करें</h4>
+        <p>नवीनतम अपडेट के लिए सोशल मीडिया पर कनेक्ट रहें:</p>
+        <ul>
+          <li>ट्विटर: @newsindian24x7</li>
+          <li>फेसबुक: facebook.com/newsindian24x7</li>
+          <li>इंस्टाग्राम: instagram.com/newsindian24x7</li>
+        </ul>
+        
+        <h4>न्यूज़लेटर</h4>
+        <p>दैनिक समाचार सारांश के लिए हमारे न्यूज़लेटर की सदस्यता लें जो आपके इनबॉक्स में पहुंचाया जाएगा।</p>
+        
+        <p><em>प्रेस पूछताछ या विज्ञापन के लिए, कृपया हमें सीधे ईमेल करें।</em></p>
+      `
     }
   }
 };
