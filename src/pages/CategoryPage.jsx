@@ -148,10 +148,10 @@ const CategoryPage = () => {
     if (!article) return null;
     return {
       ...article,
-      title: article.title_hi || article.title_en,
-      excerpt: article.excerpt_hi || article.excerpt_en,
-      content: article.content_hi || article.content_en,
-      image_alt_text: article.image_alt_text_hi || article.title_hi,
+      title: article.title_hi || currentContent.notAvailable || 'उपलब्ध नहीं',
+      excerpt: article.excerpt_hi || '',
+      content: article.content_hi || '',
+      image_alt_text: article.image_alt_text_hi || article.title_hi || currentContent.notAvailable || 'उपलब्ध नहीं',
     };
   };
 
@@ -172,9 +172,9 @@ const CategoryPage = () => {
     );
   };
 
-  const categoryName = currentContent.categories[categoryKey] || 'Category';
-  const pageTitle = `${categoryName} | न्यूज़ इंडियन 24x7`;
-  const pageDescription = `Latest news and updates from the ${categoryName} category.`;
+  const categoryName = currentContent.categories[categoryKey] || 'श्रेणी';
+  const pageTitle = `${categoryName} | ${currentContent.siteName}`;
+  const pageDescription = `${categoryName} की ताज़ा ख़बरें और अपडेट्स।`;
   const canonicalUrl = `${baseUrl}/category/${categoryKey}`;
   const canUpload = user?.email === 'pushkarraj207@gmail.com';
 

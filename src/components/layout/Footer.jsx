@@ -7,7 +7,6 @@ const Footer = ({ currentContent, onNavigate, onSelectCategory }) => {
     return null;
   }
   const { siteName, footer, categories } = currentContent;
-  const language = currentContent.siteName === 'न्यूज़ इंडियन 24x7' ? 'hi' : 'en';
 
   const footerLinks = [
     { label: footer.about, action: () => onNavigate('about'), icon: <FileText className="h-4 w-4 mr-2"/> },
@@ -47,13 +46,10 @@ const Footer = ({ currentContent, onNavigate, onSelectCategory }) => {
           <div className="lg:col-span-2">
             <p className="text-3xl font-extrabold mb-4 text-orange-500">{siteName}</p>
             <p className="text-muted-foreground text-sm leading-relaxed mb-6">
-              {language === 'hi'
-                ? 'भारत और दुनिया भर से नवीनतम, विश्वसनीय समाचार और गहन विश्लेषण प्राप्त करें। राजनीति, तकनीक, मनोरंजन, और बहुत कुछ - सब एक जगह पर।'
-                : 'Get the latest, most reliable news and in-depth analysis from India and around the globe. Politics, tech, entertainment, and more – all in one place.'
-              }
+              भारत और दुनिया भर से नवीनतम, विश्वसनीय समाचार और गहन विश्लेषण प्राप्त करें। राजनीति, तकनीक, मनोरंजन और बहुत कुछ — सब एक जगह पर।
             </p>
             <div className="mb-6">
-              <p className="font-semibold text-md mb-2 text-foreground">{language === 'hi' ? 'संपर्क करें' : 'Contact Us'}</p>
+              <p className="font-semibold text-md mb-2 text-foreground">संपर्क करें</p>
               <a href="mailto:divineink@24x7indiannews.online" className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center">
                 <Mail className="h-4 w-4 mr-2" />
                 divineink@24x7indiannews.online
@@ -76,7 +72,7 @@ const Footer = ({ currentContent, onNavigate, onSelectCategory }) => {
           </div>
 
           <div>
-            <p className="font-semibold text-lg mb-4 text-foreground">{language === 'hi' ? 'मुख्य श्रेणियां' : 'Top Categories'}</p>
+            <p className="font-semibold text-lg mb-4 text-foreground">मुख्य श्रेणियां</p>
             <ul className="space-y-2.5">
               {Object.entries(categories).slice(1, 6).map(([key, label]) => (
                 <li key={key}>
@@ -89,7 +85,7 @@ const Footer = ({ currentContent, onNavigate, onSelectCategory }) => {
           </div>
 
           <div>
-            <p className="font-semibold text-lg mb-4 text-foreground">{language === 'hi' ? 'नियम व शर्तें' : 'Rules & Regulations'}</p>
+            <p className="font-semibold text-lg mb-4 text-foreground">नियम व शर्तें</p>
             <ul className="space-y-2.5">
               {footerLinks.map((link, index) => (
                  <li key={index}>
@@ -103,7 +99,7 @@ const Footer = ({ currentContent, onNavigate, onSelectCategory }) => {
         </div>
 
         <div className="border-t mt-10 pt-8 text-center">
-          <p className="text-xs text-muted-foreground">{footer.copyright.replace('COPYRIGHT', '© ' + new Date().getFullYear())} {siteName}. {language === 'hi' ? 'सर्वाधिकार सुरक्षित।' : 'All rights reserved.'}</p>
+          <p className="text-xs text-muted-foreground">{footer.copyright.replace('COPYRIGHT', '© ' + new Date().getFullYear())} {siteName}. सर्वाधिकार सुरक्षित।</p>
         </div>
       </div>
     </motion.footer>

@@ -20,7 +20,7 @@ const DashboardPage = () => {
   return (
     <>
       <Helmet>
-        <title>Admin Dashboard | न्यूज़ इंडियन 24x7</title>
+        <title>Admin Dashboard | 24x7 Indian News</title>
         <meta name="description" content="Admin dashboard for managing users and content." />
       </Helmet>
       <Header currentContent={currentContent} language={language} darkMode={false} toggleDarkMode={() => {}} onLogoClick={handleBackToHome} />

@@ -4,7 +4,7 @@ export const legalData = {
       title: 'Privacy Policy',
       content: `
         <h3>1. Introduction</h3>
-        <p>Welcome to News Indian 24x7. We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.</p>
+        <p>Welcome to 24x7 Indian News. We are committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.</p>
         
         <h3>2. Information We Collect</h3>
         <p>We may collect information about you in a variety of ways. The information we may collect on the Site includes:</p>
@@ -41,7 +41,7 @@ export const legalData = {
       title: 'Terms & Conditions',
       content: `
         <h3>1. Agreement to Terms</h3>
-        <p>By using the News Indian 24x7 website, you agree to be bound by these Terms and Conditions. If you disagree with any part of the terms, then you may not access the service.</p>
+        <p>By using the 24x7 Indian News website, you agree to be bound by these Terms and Conditions. If you disagree with any part of the terms, then you may not access the service.</p>
         
         <h3>2. Intellectual Property Rights</h3>
         <p>Unless otherwise indicated, the Site is our proprietary property and all source code, databases, functionality, software, website designs, audio, video, text, photographs, and graphics on the Site (collectively, the “Content”) and the trademarks, service marks, and logos contained therein (the “Marks”) are owned or controlled by us or licensed to us, and are protected by copyright and trademark laws and various other intellectual property rights of India.</p>
@@ -79,7 +79,7 @@ export const legalData = {
       title: 'गोपनीयता नीति',
       content: `
         <h3>1. परिचय</h3>
-        <p>न्यूज़ इंडियन 24x7 में आपका स्वागत है। हम आपकी गोपनीयता की रक्षा के लिए प्रतिबद्ध हैं। यह गोपनीयता नीति बताती है कि जब आप हमारी वेबसाइट पर आते हैं तो हम आपकी जानकारी कैसे एकत्र, उपयोग, प्रकट और सुरक्षित करते हैं।</p>
+        <p>24x7 Indian News में आपका स्वागत है। हम आपकी गोपनीयता की रक्षा के लिए प्रतिबद्ध हैं। यह गोपनीयता नीति बताती है कि जब आप हमारी वेबसाइट पर आते हैं तो हम आपकी जानकारी कैसे एकत्र, उपयोग, प्रकट और सुरक्षित करते हैं।</p>
         
         <h3>2. हम जो जानकारी एकत्र करते हैं</h3>
         <ul>
@@ -115,7 +115,7 @@ export const legalData = {
       title: 'नियम एवं शर्तें',
       content: `
         <h3>1. शर्तों से सहमति</h3>
-        <p>न्यूज़ इंडियन 24x7 वेबसाइट का उपयोग करके, आप इन नियमों और शर्तों से बंधे होने के लिए सहमत हैं। यदि आप शर्तों के किसी भी हिस्से से असहमत हैं, तो आप सेवा का उपयोग नहीं कर सकते हैं।</p>
+        <p>24x7 Indian News वेबसाइट का उपयोग करके, आप इन नियमों और शर्तों से बंधे होने के लिए सहमत हैं। यदि आप शर्तों के किसी भी हिस्से से असहमत हैं, तो आप सेवा का उपयोग नहीं कर सकते हैं।</p>
         
         <h3>2. बौद्धिक संपदा अधिकार</h3>
         <p>साइट हमारी मालिकाना संपत्ति है और साइट पर सभी स्रोत कोड, डेटाबेस, कार्यक्षमता, सॉफ्टवेयर, वेबसाइट डिजाइन, ऑडियो, वीडियो, टेक्स्ट, तस्वीरें और ग्राफिक्स ("सामग्री") और उसमें निहित ट्रेडमार्क, सेवा चिह्न और लोगो ("मार्क्स") हमारे स्वामित्व या नियंत्रण में हैं या हमें लाइसेंस प्राप्त हैं, और भारत के कॉपीराइट और ट्रेडमार्क कानूनों और विभिन्न अन्य बौद्धिक संपदा अधिकारों द्वारा संरक्षित हैं।</p>

@@ -180,9 +180,9 @@ import React, { useEffect, useState, useRef } from 'react';
           } else {
             const translatedRelated = data.map(a => ({
               ...a,
-              title: a.title_hi || a.title_en,
-              excerpt: a.excerpt_hi || a.excerpt_en,
-              image_alt_text: a.image_alt_text_hi || a.title_hi,
+              title: a.title_hi || currentContent?.notAvailable || 'उपलब्ध नहीं',
+              excerpt: a.excerpt_hi || '',
+              image_alt_text: a.image_alt_text_hi || a.title_hi || currentContent?.notAvailable || 'उपलब्ध नहीं',
             }));
             setRelatedArticles(translatedRelated);
           }
@@ -222,7 +222,7 @@ import React, { useEffect, useState, useRef } from 'react';
         },
         "publisher": {
           "@type": "Organization",
-          "name": "News Indian 24x7",
+          "name": "24x7 Indian News",
           "logo": {
             "@type": "ImageObject",
             "url": `${baseUrl}/logo.png`
@@ -246,7 +246,7 @@ import React, { useEffect, useState, useRef } from 'react';
         <>
           <Helmet>
             <html lang={language} />
-            <title>{`${seo_title || title} | न्यूज़ इंडियन 24x7`}</title>
+            <title>{`${seo_title || title} | ${currentContent?.siteName || '24x7 Indian News'}`}</title>
             <meta name="description" content={excerpt} />
             <meta name="keywords" content={combinedKeywords} />
             <link rel="canonical" href={canonicalUrl} />

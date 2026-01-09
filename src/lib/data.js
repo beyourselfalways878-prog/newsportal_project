@@ -1,6 +1,6 @@
 export const contentData = {
   en: {
-    siteName: 'News Indian 24x7',
+    siteName: '24x7 Indian News',
     tagline: 'Your Trusted Source for 24x7 News from India & the World',
     categories: {
       all: 'All News',
@@ -27,7 +27,7 @@ export const contentData = {
     emailPlaceholder: 'Enter your email address',
     subscribeBtn: 'Subscribe',
     subscribeSuccessTitle: 'Subscription Confirmed! 🎉',
-    subscribeSuccessDesc: 'You\'re all set! Welcome to News Indian 24x7 updates.',
+    subscribeSuccessDesc: 'You\'re all set! Welcome to 24x7 Indian News updates.',
     subscribeErrorTitle: 'Subscription Failed',
     subscribeErrorDesc: 'An error occurred. Please check your email or try again later.',
     readMore: 'Read Full Story',
@@ -40,7 +40,7 @@ export const contentData = {
     noNews: 'No Articles Available',
     noNewsDesc: 'We are working on bringing you the latest updates. Please check back soon!',
     moreNewsTitle: 'Explore More News',
-    searchPlaceholder: 'Search News Indian 24x7...',
+    searchPlaceholder: 'Search 24x7 Indian News...',
     toggleLanguage: 'भाषा बदलें (Switch to Hindi)',
     toggleTheme: 'Toggle Dark/Light Mode',
     toggleMenu: 'Toggle Navigation Menu',
@@ -58,7 +58,7 @@ export const contentData = {
     lightModeEnabled: 'Light Mode Activated',
     notAvailable: 'N/A',
     footer: {
-      about: 'About News Indian 24x7',
+      about: 'About 24x7 Indian News',
       contact: 'Contact Us',
       privacy: 'Privacy Policy',
       terms: 'Terms & Conditions',
@@ -89,7 +89,7 @@ export const contentData = {
     }
   },
   hi: {
-    siteName: 'न्यूज़ इंडियन 24x7',
+    siteName: '24x7 Indian News',
     tagline: 'भारत और दुनिया की 24x7 ख़बरों का आपका विश्वसनीय स्रोत',
     categories: {
       all: 'सभी समाचार',
@@ -116,7 +116,7 @@ export const contentData = {
     emailPlaceholder: 'अपना ईमेल पता दर्ज करें',
     subscribeBtn: 'सब्सक्राइब करें',
     subscribeSuccessTitle: 'सदस्यता की पुष्टि हुई! 🎉',
-    subscribeSuccessDesc: 'आप पूरी तरह तैयार हैं! न्यूज़ इंडियन 24x7 अपडेट्स में आपका स्वागत है।',
+    subscribeSuccessDesc: 'आप पूरी तरह तैयार हैं! 24x7 Indian News अपडेट्स में आपका स्वागत है।',
     subscribeErrorTitle: 'सदस्यता विफल',
     subscribeErrorDesc: 'एक त्रुटि हुई। कृपया अपना ईमेल जांचें या बाद में पुनः प्रयास करें।',
     readMore: 'पूरी ख़बर पढ़ें',
@@ -129,7 +129,7 @@ export const contentData = {
     noNews: 'कोई लेख उपलब्ध नहीं है',
     noNewsDesc: 'हम आपको नवीनतम अपडेट लाने पर काम कर रहे हैं। कृपया जल्द ही वापस देखें!',
     moreNewsTitle: 'और समाचार देखें',
-    searchPlaceholder: 'न्यूज़ इंडियन 24x7 में खोजें...',
+    searchPlaceholder: '24x7 Indian News में खोजें...',
     toggleLanguage: 'Switch to English (अंग्रेजी में बदलें)',
     toggleTheme: 'डार्क/लाइट मोड बदलें',
     toggleMenu: 'नेविगेशन मेनू बदलें',
@@ -147,7 +147,7 @@ export const contentData = {
     lightModeEnabled: 'लाइट मोड सक्रिय',
     notAvailable: 'उपलब्ध नहीं',
     footer: {
-      about: 'न्यूज़ इंडियन 24x7 के बारे में',
+      about: '24x7 Indian News के बारे में',
       contact: 'हमसे संपर्क करें',
       privacy: 'गोपनीयता नीति',
       terms: 'नियम एवं शर्तें',

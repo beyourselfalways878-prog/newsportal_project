@@ -92,10 +92,10 @@ const ArticlePage = () => {
     if (!articleToTranslate) return null;
     return {
       ...articleToTranslate,
-      title: articleToTranslate.title_hi || articleToTranslate.title_en,
-      excerpt: articleToTranslate.excerpt_hi || articleToTranslate.excerpt_en,
-      content: articleToTranslate.content_hi || articleToTranslate.content_en,
-      image_alt_text: articleToTranslate.image_alt_text_hi || articleToTranslate.title_hi,
+      title: articleToTranslate.title_hi || currentContent.notAvailable || 'उपलब्ध नहीं',
+      excerpt: articleToTranslate.excerpt_hi || '',
+      content: articleToTranslate.content_hi || '',
+      image_alt_text: articleToTranslate.image_alt_text_hi || articleToTranslate.title_hi || currentContent.notAvailable || 'उपलब्ध नहीं',
       seo_title: articleToTranslate.seo_title_hi || articleToTranslate.title_hi,
       seo_keywords: articleToTranslate.seo_keywords_hi || '',
     };

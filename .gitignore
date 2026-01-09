@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# Local environment (do not commit secrets)
+.env
+.env.*
+!.env.example
+
+# Vite cache
+.vite
+node_modules/.vite
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

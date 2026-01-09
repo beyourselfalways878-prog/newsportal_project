@@ -9,5 +9,28 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src')
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+
+          // Router
+          if (id.includes('/react-router/') || id.includes('/react-router-dom/') || id.includes('/@remix-run/router/')) {
+            return 'vendor-router';
+          }
+
+          // Large / distinct deps
+          if (id.includes('/@supabase/')) return 'vendor-supabase';
+          if (id.includes('/framer-motion/')) return 'vendor-motion';
+          if (id.includes('/@radix-ui/')) return 'vendor-radix';
+          if (id.includes('/lucide-react/')) return 'vendor-icons';
+
+          // Let Rollup decide for everything else to avoid circular chunk graphs.
+          return;
+        }
+      }
+    }
   }
 })

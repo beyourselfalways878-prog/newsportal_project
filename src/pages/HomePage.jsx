@@ -156,10 +156,10 @@ const HomePage = () => {
     if (!article) return null;
     return {
       ...article,
-      title: article.title_hi || article.title_en,
-      excerpt: article.excerpt_hi || article.excerpt_en,
-      content: article.content_hi || article.content_en,
-      image_alt_text: article.image_alt_text_hi || article.title_hi,
+      title: article.title_hi || currentContent.notAvailable || 'उपलब्ध नहीं',
+      excerpt: article.excerpt_hi || '',
+      content: article.content_hi || '',
+      image_alt_text: article.image_alt_text_hi || article.title_hi || currentContent.notAvailable || 'उपलब्ध नहीं',
     };
   };
 
@@ -187,7 +187,7 @@ const HomePage = () => {
     );
   };
 
-  const pageTitle = `न्यूज़ इंडियन 24x7 | ${currentContent.tagline}`;
+  const pageTitle = `${currentContent.siteName} | ${currentContent.tagline}`;
   const pageDescription = currentContent.siteDescription || 'भारत और दुनिया की 24x7 ख़बरों का आपका विश्वसनीय स्रोत';
   const generalKeywords = "भारत समाचार आज, आज की ताजा खबर, राष्ट्रीय समाचार, भाजपा, कांग्रेस, नवीनतम समाचार, ब्रेकिंग न्यूज";
   const canUpload = user?.email === 'pushkarraj207@gmail.com';

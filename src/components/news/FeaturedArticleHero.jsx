@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Clock, Eye, User, CalendarDays } from 'lucide-react';
@@ -19,6 +19,49 @@ const FeaturedArticleHero = ({ article, content, onReadMore }) => {
     ? new Date(published_at).toLocaleDateString(content.language === 'hi' ? 'hi-IN' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })
     : 'N/A';
 
+  // Heuristic: strengthen the overlay when the image is bright.
+  // If canvas access fails (CORS/tainted canvas), fall back to a stronger overlay.
+  const [isImageDark, setIsImageDark] = useState(true);
+
+  const handleHeroImageLoad = (e) => {
+    const img = e.currentTarget;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      if (!context) {
+        setIsImageDark(true);
+        return;
+      }
+
+      const sampleSize = 24;
+      canvas.width = sampleSize;
+      canvas.height = sampleSize;
+      context.drawImage(img, 0, 0, sampleSize, sampleSize);
+
+      const { data } = context.getImageData(0, 0, sampleSize, sampleSize);
+      let totalLuma = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        totalLuma += 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      }
+
+      const averageLuma = totalLuma / (data.length / 4);
+      setIsImageDark(averageLuma < 140);
+    } catch {
+      setIsImageDark(true);
+    }
+  };
+
+  const overlayClassName = useMemo(() => {
+    // Bright image => stronger overlay for readability
+    return isImageDark
+      ? 'from-black/70 via-black/35 to-transparent'
+      : 'from-black/90 via-black/60 to-transparent';
+  }, [isImageDark]);
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 20 }}
@@ -31,6 +74,8 @@ const FeaturedArticleHero = ({ article, content, onReadMore }) => {
           <img
             src={image_url}
             alt={image_alt_text || title}
+            crossOrigin="anonymous"
+            onLoad={handleHeroImageLoad}
             className="w-full h-full object-cover transform transition-transform duration-500 ease-in-out group-hover:scale-105"
           />
         ) : (
@@ -38,10 +83,10 @@ const FeaturedArticleHero = ({ article, content, onReadMore }) => {
             <span className="text-muted-foreground text-xl">No Image Available</span>
            </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent"></div>
+        <div className={`absolute inset-0 bg-gradient-to-t ${overlayClassName}`}></div>
       </div>
 
-      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10 text-background">
+      <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-10 text-white">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -53,11 +98,11 @@ const FeaturedArticleHero = ({ article, content, onReadMore }) => {
           <h1 className="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-3 leading-tight line-clamp-3 shadow-text">
             {title}
           </h1>
-          <p className="text-sm md:text-base text-gray-200 mb-4 line-clamp-2 md:line-clamp-3 max-w-3xl shadow-text">
+          <p className="text-sm md:text-base text-white/90 mb-4 line-clamp-2 md:line-clamp-3 max-w-3xl shadow-text">
             {excerpt}
           </p>
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-gray-300 mb-6">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-white/80 mb-6 shadow-text">
             <span className="flex items-center"><User className="h-4 w-4 mr-1.5" /> {authorName}</span>
             <span className="flex items-center"><CalendarDays className="h-4 w-4 mr-1.5" /> {formattedDate}</span>
             <span className="flex items-center"><Clock className="h-4 w-4 mr-1.5" /> {time_ago || 'N/A'}</span>

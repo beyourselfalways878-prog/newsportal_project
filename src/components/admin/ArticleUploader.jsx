@@ -15,8 +15,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/customSupabaseClient';
-import mammoth from 'mammoth';
 import { Loader2, FileText, Image as ImageIcon, Zap, Youtube } from 'lucide-react';
+
+let mammothPromise;
+const getMammoth = () => {
+  if (!mammothPromise) {
+    mammothPromise = import('mammoth').then((m) => m.default ?? m);
+  }
+  return mammothPromise;
+};
 
 const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, categories, article }) => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -84,6 +91,7 @@ const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, c
     toast({ title: currentContent.uploader.processing, description: 'Converting .docx file...' });
 
     try {
+      const mammoth = await getMammoth();
       const options = {
         transformDocument: mammoth.transforms.paragraph((paragraph) => {
             let newChildren = [];
@@ -200,8 +208,6 @@ const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, c
     try {
       const finalData = {
         ...articleData,
-        title_en: articleData.title_hi,
-        content_en: contentHtml,
         content_hi: contentHtml,
         image_url: finalImageUrl,
         published_at: articleData.id ? articleData.published_at : new Date().toISOString(),

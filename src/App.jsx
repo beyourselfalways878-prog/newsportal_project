@@ -1,31 +1,41 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { AuthProvider } from '@/contexts/SupabaseAuthContext.jsx';
-import HomePage from '@/pages/HomePage.jsx';
-import DashboardPage from '@/pages/DashboardPage.jsx';
 import ProtectedRoute from '@/components/admin/ProtectedRoute.jsx';
-import ArticlePage from '@/pages/ArticlePage.jsx';
-import CategoryPage from '@/pages/CategoryPage.jsx';
+import { Loader2 } from 'lucide-react';
+
+const HomePage = lazy(() => import('@/pages/HomePage.jsx'));
+const CategoryPage = lazy(() => import('@/pages/CategoryPage.jsx'));
+const ArticlePage = lazy(() => import('@/pages/ArticlePage.jsx'));
+const DashboardPage = lazy(() => import('@/pages/DashboardPage.jsx'));
+
+const PageFallback = () => (
+  <div className="flex justify-center items-center min-h-[60vh]">
+    <Loader2 className="h-16 w-16 animate-spin text-primary" />
+  </div>
+);
 
 const App = () => {
   return (
     <AuthProvider>
       <Router>
         <div className="min-h-screen transition-colors duration-500 font-hindi">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/category/:categoryKey" element={<CategoryPage />} />
-            <Route path="/article/:id" element={<ArticlePage />} />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute allowedRoles={['admin', 'super-admin']}>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
+          <Suspense fallback={<PageFallback />}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/category/:categoryKey" element={<CategoryPage />} />
+              <Route path="/article/:id" element={<ArticlePage />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute allowedRoles={['admin', 'super-admin']}>
+                    <DashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </Suspense>
           <Toaster />
         </div>
       </Router>

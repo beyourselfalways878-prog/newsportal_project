@@ -107,7 +107,7 @@ const Header = ({
                 aria-label={searchPlaceholder}
               />
             </div>
-            <Button variant="ghost" size="icon" className="relative text-white/90 hover:text-white" aria-label={language === 'hi' ? 'सूचनाएं' : 'Notifications'}>
+            <Button variant="ghost" size="icon" className="relative text-white/90 hover:text-white" aria-label="सूचनाएं">
               <BellDot className="h-5 w-5 sm:h-6 sm:w-6" />
               <span className="absolute top-0 right-0 flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
