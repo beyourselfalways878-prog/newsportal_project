@@ -69,13 +69,16 @@ const FeaturedArticleHero = ({ article, content, onReadMore }) => {
       transition={{ duration: 0.6 }}
       className="relative rounded-xl overflow-hidden shadow-2xl group bg-card border border-border/50"
     >
-      <div className="aspect-w-16 aspect-h-9 lg:aspect-h-7">
+      <div className="relative aspect-video lg:aspect-[16/7]">
         {image_url ? (
           <img
             src={image_url}
             alt={image_alt_text || title}
             crossOrigin="anonymous"
             onLoad={handleHeroImageLoad}
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
             className="w-full h-full object-cover transform transition-transform duration-500 ease-in-out group-hover:scale-105"
           />
         ) : (

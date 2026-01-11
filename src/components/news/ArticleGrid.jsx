@@ -19,6 +19,8 @@ const ArticleCard = ({ article, content, onArticleClick, index }) => {
           <img
             src={article.image_url}
             alt={article.image_alt_text || article.title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
           />
         ) : (

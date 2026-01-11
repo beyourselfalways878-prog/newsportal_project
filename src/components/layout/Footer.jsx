@@ -16,11 +16,10 @@ const Footer = ({ currentContent, onNavigate, onSelectCategory }) => {
   ];
 
   const socialIcons = [
-    { icon: <Facebook className="h-5 w-5" />, href: "#", label: "Facebook" },
-    { icon: <Twitter className="h-5 w-5" />, href: "#", label: "Twitter" },
-    { icon: <Instagram className="h-5 w-5" />, href: "#", label: "Instagram" },
-    { icon: <Youtube className="h-5 w-5" />, href: "#", label: "YouTube" },
-    { icon: <Rss className="h-5 w-5" />, href: "#", label: "RSS Feed" },
+    { icon: <Facebook className="h-5 w-5" />, href: "https://facebook.com/newsindian24x7", label: "Facebook" },
+    { icon: <Twitter className="h-5 w-5" />, href: "https://twitter.com/newsindian24x7", label: "Twitter" },
+    { icon: <Instagram className="h-5 w-5" />, href: "https://instagram.com/newsindian24x7", label: "Instagram" },
+    { icon: <Rss className="h-5 w-5" />, href: "/rss.xml", label: "RSS Feed" },
   ];
 
   const handleLinkClick = (e, action) => {
@@ -61,6 +60,8 @@ const Footer = ({ currentContent, onNavigate, onSelectCategory }) => {
                   key={index}
                   href={social.href}
                   aria-label={social.label}
+                  target={social.href.startsWith('http') ? "_blank" : undefined}
+                  rel={social.href.startsWith('http') ? "noopener noreferrer" : undefined}
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   whileTap={{ scale: 0.95 }}
                   className="text-muted-foreground hover:text-primary transition-colors"
