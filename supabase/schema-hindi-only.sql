@@ -150,11 +150,7 @@ CREATE POLICY "articles_insert_policy"
     FOR INSERT 
     TO authenticated
     WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
+        public.is_admin_or_superuser(auth.uid())
     );
 
 -- Only authenticated users with admin/superuser role can update
@@ -163,18 +159,10 @@ CREATE POLICY "articles_update_policy"
     FOR UPDATE 
     TO authenticated
     USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
+        public.is_admin_or_superuser(auth.uid())
     )
     WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
+        public.is_admin_or_superuser(auth.uid())
     );
 
 -- Only superusers can delete articles
@@ -207,11 +195,7 @@ CREATE POLICY "profiles_select_admin_policy"
     FOR SELECT 
     TO authenticated
     USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
+        public.is_admin_or_superuser(auth.uid())
     );
 
 -- Users can update their own profile (except role)
@@ -228,11 +212,7 @@ CREATE POLICY "profiles_update_admin_policy"
     FOR UPDATE 
     TO authenticated
     USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role = 'superuser'
-        )
+        public.is_superuser(auth.uid())
     );
 
 -- Allow insert for new user profile creation
@@ -258,11 +238,7 @@ CREATE POLICY "trending_topics_insert_policy"
     FOR INSERT 
     TO authenticated
     WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
+        public.is_admin_or_superuser(auth.uid())
     );
 
 -- Only admins can update trending topics
@@ -271,11 +247,7 @@ CREATE POLICY "trending_topics_update_policy"
     FOR UPDATE 
     TO authenticated
     USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
+        public.is_admin_or_superuser(auth.uid())
     );
 
 -- Only superusers can delete trending topics
@@ -307,16 +279,27 @@ CREATE POLICY "subscribers_select_policy"
     FOR SELECT 
     TO authenticated
     USING (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
+        public.is_admin_or_superuser(auth.uid())
     );
 
 -- =============================================================================
 -- 10. FUNCTIONS AND TRIGGERS
 -- =============================================================================
+
+-- Helper functions to check admin / superuser status without causing RLS recursion
+CREATE OR REPLACE FUNCTION public.is_admin_or_superuser(uid UUID)
+RETURNS boolean AS $$
+  SELECT EXISTS(
+    SELECT 1 FROM public.profiles WHERE id = uid AND role IN ('admin','superuser')
+  );
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.is_superuser(uid UUID)
+RETURNS boolean AS $$
+  SELECT EXISTS(
+    SELECT 1 FROM public.profiles WHERE id = uid AND role = 'superuser'
+  );
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
 
 -- Function to handle new user registration (creates profile automatically)
 CREATE OR REPLACE FUNCTION public.handle_new_user()

@@ -6,6 +6,7 @@ import Footer from '@/components/layout/Footer';
 import UserManagement from '@/components/admin/UserManagement';
 import DatabaseTest from '@/components/admin/DatabaseTest';
 import ArticleManager from '@/components/admin/ArticleManager';
+import Fallbacks from '@/components/admin/Fallbacks';
 import { Button } from '@/components/ui/button';
 import { contentData } from '@/lib/data';
 import { useNavigate } from 'react-router-dom';
@@ -106,6 +107,12 @@ const DashboardPage = () => {
           <div className="space-y-4">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">Database Diagnostics</h2>
             <DatabaseTest />
+          </div>
+
+          {/* Fallback logs (admins only) */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Fallback Logs</h2>
+            <Fallbacks />
           </div>
 
           {/* User Management Section */}

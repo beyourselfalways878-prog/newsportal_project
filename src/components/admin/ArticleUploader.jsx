@@ -17,6 +17,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { supabase } from '@/lib/customSupabaseClient';
 import { useAuth } from '@/contexts/SupabaseAuthContext';
 import { Loader2, FileText, Image as ImageIcon, Zap, Youtube, CheckCircle2, Upload } from 'lucide-react';
+import DocxPreview from './DocxPreview.jsx';
 
 let mammothPromise;
 const getMammoth = () => {
@@ -51,9 +52,48 @@ const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, c
   const [featuredImageUrl, setFeaturedImageUrl] = useState('');
   const [extractionStatus, setExtractionStatus] = useState(null); // null, 'success', 'partial'
   const [uploadedImagesCount, setUploadedImagesCount] = useState(0);
+  const [docxBuffer, setDocxBuffer] = useState(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
   const { toast } = useToast();
-  const { profile } = useAuth();
+  const { profile, session } = useAuth();
+
+  // Upload helper: try client-side upload first, fall back to server-side upload using service role
+  const uploadImageWithFallback = async (fileOrBlob, fileName, contentType, opts = {}) => {
+    // Try client upload
+    try {
+      const { data, error } = await supabase.storage.from('article-images').upload(fileName, fileOrBlob, { contentType, upsert: !!opts.upsert });
+      if (!error && data) {
+        const { data: urlData } = supabase.storage.from('article-images').getPublicUrl(data.path);
+        return { path: data.path, publicUrl: urlData.publicUrl };
+      }
+      console.warn('Client upload returned error, will attempt server fallback:', error);
+    } catch (err) {
+      console.warn('Client upload threw error, will attempt server fallback:', err);
+    }
+
+    // Server fallback - convert to base64 and POST to /api/upload-image
+    const toBase64 = (blob) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = reader.result;
+        const base64 = dataUrl.split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+    const base64 = await toBase64(fileOrBlob);
+    const body = { filename: fileName, content_type: contentType, data: base64 };
+    const headers = { 'Content-Type': 'application/json' };
+    if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
+
+    const resp = await fetch('/api/upload-image', { method: 'POST', headers, body: JSON.stringify(body) });
+    const json = await resp.json();
+    if (!resp.ok) throw new Error(json?.error || `Server upload failed: ${resp.status}`);
+    return { path: json.path, publicUrl: json.publicUrl };
+  };
 
   const formatSupabaseError = (err) => {
     if (!err) return 'Unknown error';
@@ -279,6 +319,14 @@ const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, c
     toast({ title: 'प्रोसेसिंग...', description: 'DOCX फ़ाइल से डेटा निकाला जा रहा है...' });
 
     try {
+      // Save raw DOCX buffer for preview
+      try {
+        const buf = await file.arrayBuffer();
+        setDocxBuffer(buf);
+      } catch (e) {
+        console.warn('Failed to read docx into buffer for preview:', e);
+      }
+
       console.log('Loading mammoth library');
       const mammoth = await getMammoth();
       console.log('Mammoth loaded');
@@ -325,28 +373,17 @@ const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, c
           const blob = dataURItoBlob(`data:${image.contentType};base64,${imageBuffer}`);
           const fileName = `articles/${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
 
-          console.log('Uploading image to Supabase');
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('article-images')
-            .upload(fileName, blob, { contentType: image.contentType });
-
-          if (uploadError) {
-            console.error('Image upload error:', uploadError);
-            throw new Error(`Image upload failed: ${uploadError.message}`);
-          }
-
-          const { data: urlData } = supabase.storage
-            .from('article-images')
-            .getPublicUrl(uploadData.path);
+          console.log('Uploading image to Supabase (with fallback)');
+          const { path, publicUrl } = await uploadImageWithFallback(blob, fileName, image.contentType);
 
           imageCount++;
           if (!firstImageUrl) {
-            firstImageUrl = urlData.publicUrl;
+            firstImageUrl = publicUrl;
           }
           setUploadedImagesCount(imageCount);
           console.log('Image uploaded:', imageCount);
 
-          return { src: urlData.publicUrl };
+          return { src: publicUrl };
         })
       };
 
@@ -436,17 +473,14 @@ const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, c
 
     if (featuredImageFile) {
       const fileName = `featured/${Date.now()}-${featuredImageFile.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('article-images')
-        .upload(fileName, featuredImageFile, { upsert: !!articleData.id });
-
-      if (uploadError) {
-        toast({ title: "Image Upload Error", description: uploadError.message, variant: "destructive" });
+      try {
+        const { path, publicUrl } = await uploadImageWithFallback(featuredImageFile, fileName, featuredImageFile.type, { upsert: !!articleData.id });
+        finalImageUrl = publicUrl;
+      } catch (err) {
+        toast({ title: "Image Upload Error", description: err?.message || "Failed to upload image", variant: "destructive" });
         setIsProcessing(false);
         return;
       }
-      const { data: urlData } = supabase.storage.from('article-images').getPublicUrl(uploadData.path);
-      finalImageUrl = urlData.publicUrl;
     }
 
     try {
@@ -461,11 +495,35 @@ const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, c
       delete finalData.created_at;
 
       const { error } = await supabase.from('articles').upsert(finalData);
-      if (error) throw error;
+      if (error) {
+        console.warn('Client upsert error, attempting server fallback:', error);
 
-      toast({ title: articleData.id ? 'Article Updated!' : currentContent.uploader.uploadSuccess });
-      onUploadSuccess();
-      setIsOpen(false);
+        // Server-side fallback: call /api/create-article with user's token
+        try {
+          const token = (await supabase.auth.getSession())?.data?.session?.access_token;
+          const resp = await fetch('/api/create-article', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(finalData),
+          });
+          const json = await resp.json();
+          if (!resp.ok) throw new Error(json?.error || `Server insert failed: ${resp.status}`);
+
+          toast({ title: articleData.id ? 'Article Updated (server)' : currentContent.uploader.uploadSuccess });
+          onUploadSuccess();
+          setIsOpen(false);
+        } catch (serverErr) {
+          console.error('Server-side insert fallback failed:', serverErr);
+          toast({ variant: 'destructive', title: currentContent.uploader.uploadError, description: formatSupabaseError(serverErr) });
+        }
+      } else {
+        toast({ title: articleData.id ? 'Article Updated!' : currentContent.uploader.uploadSuccess });
+        onUploadSuccess();
+        setIsOpen(false);
+      }
     } catch (error) {
       console.error('Error saving article:', error);
       toast({ variant: 'destructive', title: currentContent.uploader.uploadError, description: formatSupabaseError(error) });
@@ -482,11 +540,18 @@ const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, c
       if (!open) resetForm();
     }}>
       <DialogContent className="w-full sm:max-w-2xl md:max-w-4xl max-h-[85dvh] sm:max-h-[90vh] flex flex-col overflow-hidden">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle>{formTitle}</DialogTitle>
-          <DialogDescription className="hidden sm:block">
-            DOCX फ़ाइल अपलोड करें - सभी फ़ील्ड और इमेज स्वचालित रूप से निकाले जाएंगे
-          </DialogDescription>
+        <DialogHeader className="flex-shrink-0 flex items-start justify-between gap-4">
+          <div>
+            <DialogTitle>{formTitle}</DialogTitle>
+            <DialogDescription className="hidden sm:block">
+              DOCX फ़ाइल अपलोड करें - सभी फ़ील्ड और इमेज स्वचालित रूप से निकाले जाएंगे
+            </DialogDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" className="btn btn-sm" onClick={() => setIsPreviewOpen(true)} disabled={!docxBuffer} title={docxBuffer ? 'Preview DOCX' : 'Upload a DOCX to enable preview'}>
+              Preview DOCX
+            </button>
+          </div>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto -mx-4 px-4 sm:-mx-6 sm:px-6 space-y-4 sm:space-y-6 overscroll-contain touch-pan-y">
@@ -533,6 +598,21 @@ const ArticleUploader = ({ isOpen, setIsOpen, onUploadSuccess, currentContent, c
           {/* Extracted Data Review Section - Show after extraction */}
           {(extractionStatus || articleData.title_hi) && (
             <>
+              {/* Preview Dialog */}
+              <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+                <DialogContent className="w-full sm:max-w-3xl">
+                  <DialogHeader>
+                    <DialogTitle>DOCX Preview</DialogTitle>
+                    <DialogDescription>Rendered preview of the uploaded DOCX file for review before publishing.</DialogDescription>
+                  </DialogHeader>
+                  <div className="py-4">
+                    {docxBuffer ? <DocxPreview arrayBuffer={docxBuffer} /> : <p>No DOCX available to preview.</p>}
+                  </div>
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button variant="ghost" onClick={() => setIsPreviewOpen(false)}>Close</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
               {/* Title and Excerpt */}
               <div className="grid grid-cols-1 gap-4 sm:gap-5">
                 <div>

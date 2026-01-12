@@ -54,13 +54,7 @@ ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
     bucket_id = 'article-images'
-    AND (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
-    )
+    AND public.is_admin_or_superuser(auth.uid())
 );
 
 -- Allow authenticated admins to update images
@@ -69,13 +63,7 @@ ON storage.objects FOR UPDATE
 TO authenticated
 USING (
     bucket_id = 'article-images'
-    AND (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
-    )
+    AND public.is_admin_or_superuser(auth.uid())
 );
 
 -- Allow superusers to delete images
@@ -84,13 +72,7 @@ ON storage.objects FOR DELETE
 TO authenticated
 USING (
     bucket_id = 'article-images'
-    AND (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role = 'superuser'
-        )
-    )
+    AND public.is_superuser(auth.uid())
 );
 
 -- -----------------------------------------------------------------------------
@@ -108,13 +90,7 @@ ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
     bucket_id = 'article-videos'
-    AND (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
-    )
+    AND public.is_admin_or_superuser(auth.uid())
 );
 
 -- Allow authenticated admins to update videos
@@ -123,13 +99,7 @@ ON storage.objects FOR UPDATE
 TO authenticated
 USING (
     bucket_id = 'article-videos'
-    AND (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role IN ('admin', 'superuser')
-        )
-    )
+    AND public.is_admin_or_superuser(auth.uid())
 );
 
 -- Allow superusers to delete videos
@@ -138,13 +108,7 @@ ON storage.objects FOR DELETE
 TO authenticated
 USING (
     bucket_id = 'article-videos'
-    AND (
-        EXISTS (
-            SELECT 1 FROM public.profiles 
-            WHERE profiles.id = auth.uid() 
-            AND profiles.role = 'superuser'
-        )
-    )
+    AND public.is_superuser(auth.uid())
 );
 
 -- =============================================================================
