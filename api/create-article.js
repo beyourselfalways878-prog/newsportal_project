@@ -14,14 +14,16 @@ export default async function handler(req, res) {
     const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
     if (!url || !serviceKey) return res.status(500).json({ error: 'Missing server-side Supabase credentials (service role key not set)' });
 
-    const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
-
-    // Validate token and get user
-    const { data: userData, error: userErr } = await admin.auth.getUser(token);
+    // Use a verifier client to get user without mutating admin auth state
+    const verifier = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
+    const { data: userData, error: userErr } = await verifier.auth.getUser(token);
     if (userErr || !userData?.user) {
       return res.status(401).json({ error: 'Invalid token' });
     }
     const user = userData.user;
+
+    // Create fresh admin client for DB writes
+    const admin = createClient(url, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
     // Check profile role
     const { data: profileRow, error: profileErr } = await admin.from('profiles').select('role').eq('id', user.id).maybeSingle();
