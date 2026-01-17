@@ -392,6 +392,45 @@ input[type="email"]:focus, input[type="text"]:focus, textarea:focus {
   transform: translateY(0);
 }
 
+/* Ribbons: sports (static) and latest news (moving ticker) */
+.ribbon {
+  background: #05326e; /* dark blue */
+  color: #fff;
+  width: 100%;
+}
+
+.ribbon--sports {
+  font-weight: 500;
+}
+
+.ribbon--ticker {
+  overflow: hidden;
+}
+
+.ribbon__marquee {
+  position: relative;
+}
+
+.ribbon__track {
+  display: inline-block;
+  white-space: nowrap;
+  will-change: transform;
+  padding: 0.35rem 0;
+  animation: marquee 18s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ribbon__track { animation: none; }
+}
+
+.ribbon__marquee:hover .ribbon__track { animation-play-state: paused; }
+
 /* Enhanced prose styling */
 .prose strong {
   font-weight: 700;
