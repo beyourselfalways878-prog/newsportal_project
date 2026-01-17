@@ -93,7 +93,7 @@ const HomePage = () => {
         console.error('Error fetching articles:', error);
         toast({
           title: 'Error Fetching News',
-          description: 'Could not load articles from the database.',
+          description: error?.message || 'Could not load articles from the database.',
           variant: 'destructive',
         });
         setFeaturedArticle(null);

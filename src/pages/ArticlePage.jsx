@@ -36,7 +36,7 @@ const ArticlePage = () => {
       console.error('Error fetching article:', error);
       toast({
         title: 'Error',
-        description: 'Could not load the article.',
+        description: error?.message || 'Could not load the article.',
         variant: 'destructive',
       });
       navigate('/');

@@ -64,7 +64,7 @@ const CategoryPage = () => {
       console.error('Error fetching articles:', error);
       toast({
         title: 'Error Fetching News',
-        description: 'Could not load articles for this category.',
+        description: error?.message || 'Could not load articles for this category.',
         variant: 'destructive',
       });
       setArticles([]);
