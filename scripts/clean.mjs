@@ -1,26 +1,27 @@
-import fs from 'node:fs';
-import path from 'node:path';
-
-const root = process.cwd();
+#!/usr/bin/env node
+import { rm } from 'fs/promises';
+import { existsSync } from 'fs';
 
 const targets = [
   'dist',
   '.vite',
-  path.join('node_modules', '.vite'),
-  path.join('node_modules', '.cache'),
+  'node_modules/.vite',
+  '.cache',
+  'coverage',
+  'build',
+  'tmp',
+  'dist-ssr'
 ];
 
-const removeTarget = (relativePath) => {
-  const absolutePath = path.resolve(root, relativePath);
-  if (!fs.existsSync(absolutePath)) return { relativePath, removed: false };
-
-  fs.rmSync(absolutePath, { recursive: true, force: true });
-  return { relativePath, removed: true };
-};
-
-const results = targets.map(removeTarget);
-
-for (const result of results) {
-  // Keep output readable in CI/local terminals
-  process.stdout.write(`${result.removed ? 'Removed' : 'Missing'}: ${result.relativePath}\n`);
+console.log('Cleaning project folders...');
+for (const t of targets) {
+  if (existsSync(t)) {
+    try {
+      await rm(t, { recursive: true, force: true });
+      console.log(`Removed: ${t}`);
+    } catch (err) {
+      console.error(`Failed to remove ${t}:`, err?.message || err);
+    }
+  }
 }
+console.log('Clean finished.');
