@@ -37,7 +37,7 @@ const Header = ({
 
       <header className="sticky top-0 z-50 shadow-2xl bg-gradient-to-r from-rose-500 via-fuchsia-500 to-indigo-600 backdrop-blur-lg border-b border-white/20">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-2 border-b border-white/20">
+          <div className="flex items-center justify-between py-1.5 border-b border-white/20">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -116,14 +116,14 @@ const Header = ({
             </motion.div>
           </div>
 
-          <div className="flex items-center justify-between py-3 md:py-5">
+          <div className="flex items-center justify-between py-2 md:py-4">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
               <button onClick={onLogoClick} className="block hover:opacity-90 transition-opacity" aria-label="Back to homepage">
-                <span className="text-2xl md:text-4xl font-extrabold text-white tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
+                <span className="text-xl md:text-3xl font-extrabold text-white tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
                   {siteName}
                 </span>
               </button>
