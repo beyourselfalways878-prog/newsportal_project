@@ -1,9 +1,6 @@
-import OpenAI from 'openai';
-
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_KEY,
-  dangerouslyAllowBrowser: true // Only for development
-});
+// OpenAI calls are implemented on the server to keep the API key secret.
+// Client-side code calls the server endpoint at `/api/openai-generate`.
+// Do NOT expose your OpenAI key as a VITE_ env variable in production.
 
 // Mock sports data - In production, replace with real API (cricbuzz, sportmonks, etc.)
 const mockLiveMatches = [
@@ -336,87 +333,50 @@ export const getMatchDetail = async (matchId) => {
   };
 };
 
-// Generate AI commentary using OpenAI
+// Generate AI commentary (server-side)
 export const generateAICommentary = async (matchContext) => {
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an experienced sports commentator. Provide exciting, brief commentary in Hindi and English mix (Hinglish style) for the given match situation.'
-        },
-        {
-          role: 'user',
-          content: `Match: ${matchContext.team1} vs ${matchContext.team2}
-Current situation: ${matchContext.status}
-Generate a brief, exciting commentary line (max 100 characters) about this match situation.`
-        }
-      ],
-      max_tokens: 100,
-      temperature: 0.8
+    const res = await fetch('/api/openai-generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'commentary', payload: matchContext })
     });
-    
-    return response.choices[0].message.content.trim();
+    const json = await res.json();
+    return json.text || 'रोमांचक मुकाबला जारी है! An exciting match in progress!';
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    console.error('AI commentary fetch error:', error);
     return 'रोमांचक मुकाबला जारी है! An exciting match in progress!';
   }
 };
 
-// Generate match analysis using OpenAI
+// Generate match analysis (server-side)
 export const generateMatchAnalysis = async (matchData) => {
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a professional sports analyst. Provide detailed analysis in Hinglish (Hindi-English mix) for Indian audience.'
-        },
-        {
-          role: 'user',
-          content: `Analyze this match:
-${matchData.team1.name} ${matchData.team1.score} vs ${matchData.team2.name} ${matchData.team2.score}
-Status: ${matchData.status}
-Provide key insights, turning points, and player performances (max 250 words).`
-        }
-      ],
-      max_tokens: 400,
-      temperature: 0.7
+    const res = await fetch('/api/openai-generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'analysis', payload: matchData })
     });
-    
-    return response.choices[0].message.content.trim();
+    const json = await res.json();
+    return json.text || 'यह एक रोमांचक मैच रहा। This was an exciting match with great performances from both teams.';
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    console.error('AI analysis fetch error:', error);
     return 'यह एक रोमांचक मैच रहा। This was an exciting match with great performances from both teams.';
   }
 };
 
-// Get player insights using OpenAI
+// Get player insights (server-side)
 export const getPlayerInsights = async (playerName, performance) => {
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a cricket/football analyst. Provide player performance insights in Hinglish.'
-        },
-        {
-          role: 'user',
-          content: `Player: ${playerName}
-Performance: ${performance}
-Provide brief insights about this performance (max 100 words).`
-        }
-      ],
-      max_tokens: 150,
-      temperature: 0.7
+    const res = await fetch('/api/openai-generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'insights', payload: { playerName, performance } })
     });
-    
-    return response.choices[0].message.content.trim();
+    const json = await res.json();
+    return json.text || `${playerName} ने शानदार प्रदर्शन किया। Great performance by the player!`;
   } catch (error) {
-    console.error('OpenAI API error:', error);
+    console.error('AI insights fetch error:', error);
     return `${playerName} ने शानदार प्रदर्शन किया। Great performance by the player!`;
   }
 };

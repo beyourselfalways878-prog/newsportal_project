@@ -42,6 +42,7 @@ A modern, Hindi-only news portal built with React and Vite, featuring real-time 
      VITE_SUPABASE_URL=your_supabase_url
      VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
      ```
+   - **Important (security)**: For AI features set your server-side `OPENAI_API_KEY` (do NOT store OpenAI keys in `VITE_` variables which are bundled into the client). If you use CricketData and proxy it server-side, set `CRICKETDATA_API_KEY` in your hosting provider's secrets (not in client-exposed `VITE_` variables).
 
 4. **Run locally**:
    ```bash
