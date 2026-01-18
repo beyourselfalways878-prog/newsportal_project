@@ -18,6 +18,28 @@ const CricketScoreWidget = () => {
         const html = await res.text();
         if (!mounted) return;
 
+        // Inject scoped CSS to protect layout
+        const injectedCSS = `
+          #cric_data_live_score .slideholder{display:flex;overflow:hidden;scroll-behavior:smooth;gap:8px}
+          #cric_data_live_score .slab{box-sizing:border-box;flex:0 0 auto;padding:8px;overflow:hidden;display:flex;align-items:stretch}
+          #cric_data_live_score .slab > div{width:100%;height:100%;overflow:hidden}
+          #cric_data_live_score .slab img.criclogo{max-width:48px;height:auto;display:inline-block;vertical-align:middle}
+          #cric_data_live_score .slab table{width:100%;table-layout:fixed;border-collapse:collapse}
+          #cric_data_live_score .slab td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px}
+          #cric_data_live_score .slab hr{margin:8px 0;border:none;border-top:1px solid #eee}
+        `;
+
+        // Ensure style tag exists
+        let styleTag = document.getElementById('cric-widget-style');
+        if (!styleTag) {
+          styleTag = document.createElement('style');
+          styleTag.id = 'cric-widget-style';
+          styleTag.appendChild(document.createTextNode(injectedCSS));
+          document.head.appendChild(styleTag);
+        } else {
+          styleTag.textContent = injectedCSS;
+        }
+
         container.innerHTML = html;
 
         // Post-process: replace "onclick=\"cricapi.showModal('url')\"" with normal links (open in new tab)
