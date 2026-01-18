@@ -271,7 +271,34 @@ import React, { useEffect, useState, useRef, useMemo } from 'react';
             <meta property="og:image" content={image_url} />
             <meta property="og:url" content={canonicalUrl} />
             <meta property="og:type" content="article" />
+            <meta name="news_keywords" content={combinedKeywords} />
             <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+            <script type="application/ld+json">
+              {JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                  {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Home",
+                    "item": `${baseUrl}/`
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": categoryName || 'Article',
+                    "item": `${baseUrl}/category/${category}`
+                  },
+                  {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": seo_title || title,
+                    "item": canonicalUrl
+                  }
+                ]
+              })}
+            </script>
           </Helmet>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

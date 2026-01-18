@@ -7,7 +7,7 @@ export default async function handler(req, res) {
 
     const { data: articles, error } = await supabase
       .from('articles')
-      .select('id, published_at, updated_at')
+      .select('id, published_at, updated_at, image_url')
       .order('published_at', { ascending: false })
       .limit(2000);
 
@@ -62,13 +62,14 @@ export default async function handler(req, res) {
         lastmod,
         changefreq: 'weekly',
         priority: '0.7',
+        image: a.image_url || undefined,
       };
     });
 
     const urls = [...staticUrls, ...articleUrls];
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${urls
   .map((u) => {
     const parts = [
@@ -77,8 +78,14 @@ ${urls
       u.lastmod ? `<lastmod>${escapeXml(u.lastmod)}</lastmod>` : '',
       u.changefreq ? `<changefreq>${escapeXml(u.changefreq)}</changefreq>` : '',
       u.priority ? `<priority>${escapeXml(u.priority)}</priority>` : '',
-      `</url>`,
     ].filter(Boolean);
+
+    // Add image if present
+    if (u.image) {
+      parts.push(`<image:image><image:loc>${escapeXml(u.image)}</image:loc></image:image>`);
+    }
+
+    parts.push(`</url>`);
 
     return parts.join('');
   })
