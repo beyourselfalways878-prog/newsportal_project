@@ -197,11 +197,11 @@ const CricketScoreWidget = () => {
   }
 
   return (
-    <div className="w-full max-w-[340px] min-w-[240px] sm:max-w-[320px]">
-      <div ref={holderRef} className="slideholder overflow-x-auto snap-x snap-mandatory rounded-xl border border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800" style={{height: 320, WebkitOverflowScrolling: 'touch'}}>
-        <div className="flex" style={{gap: 12}}>
+    <div className="w-full sm:w-[300px] sm:h-[300px]">
+      <div ref={holderRef} className="slideholder sm:overflow-x-auto overflow-y-auto sm:snap-x snap-mandatory rounded-xl border border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800" style={{height: '100%', WebkitOverflowScrolling: 'touch'}}>
+        <div className="flex sm:flex-row flex-col" style={{gap: 12}}>
           {matches.map((m) => (
-            <div key={m.id} className="slab snap-start p-3 sm:p-4 bg-white dark:bg-slate-800 w-[260px] sm:w-[300px] rounded-lg shadow-sm flex flex-col justify-between relative h-full" style={{minWidth: 260, boxSizing: 'border-box'}}>
+            <div key={m.id} className="slab snap-start p-3 sm:p-4 bg-white dark:bg-slate-800 w-full sm:w-[300px] rounded-lg shadow-sm flex flex-col justify-between relative h-full" style={{boxSizing: 'border-box'}}>
               <div>
                 <div className="text-xs text-muted-foreground">{m.matchType?.toUpperCase()} • {m.date}</div>
 
