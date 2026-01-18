@@ -92,13 +92,17 @@ const CricketScoreWidget = () => {
     };
   }, []);
 
-  // Auto-advance logic
+  // Auto-advance / accessibility logic
   useEffect(() => {
     const holder = holderRef.current;
     if (!holder || matches.length === 0) return;
 
     let paused = false;
-    const doAdvance = () => {
+
+    // Decide horizontal vs vertical based on container dimensions and breakpoint
+    const isHorizontal = () => (holder.scrollWidth > holder.clientWidth) && (window.innerWidth >= 640);
+
+    const doAdvanceHorizontal = () => {
       const w = holder.clientWidth;
       if ((holder.scrollLeft + w) >= holder.scrollWidth - 2) {
         holder.scrollLeft = 0;
@@ -107,23 +111,58 @@ const CricketScoreWidget = () => {
       }
     };
 
-    const interval = setInterval(() => {
-      if (!paused) doAdvance();
-    }, 5000);
+    // Only auto-advance when horizontal (desktop/tablet); disable on mobile vertical layout
+    let interval = null;
+    if (isHorizontal()) {
+      interval = setInterval(() => { if (!paused) doAdvanceHorizontal(); }, 5000);
+    }
 
-    holder.addEventListener('mouseenter', () => (paused = true));
-    holder.addEventListener('mouseleave', () => (paused = false));
+    // Pause on hover (desktop) / touchstart (mobile)
+    const onMouseEnter = () => (paused = true);
+    const onMouseLeave = () => (paused = false);
+    const onTouchStart = () => (paused = true);
+    const onTouchEnd = () => (paused = false);
+
+    holder.addEventListener('mouseenter', onMouseEnter);
+    holder.addEventListener('mouseleave', onMouseLeave);
+    holder.addEventListener('touchstart', onTouchStart, { passive: true });
+    holder.addEventListener('touchend', onTouchEnd);
+
+    // Keyboard navigation for accessibility
+    holder.tabIndex = 0;
+    const onKey = (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (isHorizontal()) doAdvanceHorizontal(); else holder.scrollTop += holder.clientHeight || 200;
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (isHorizontal()) holder.scrollLeft = Math.max(0, holder.scrollLeft - holder.clientWidth); else holder.scrollTop = Math.max(0, holder.scrollTop - (holder.clientHeight || 200));
+      }
+    };
+
+    holder.addEventListener('keydown', onKey);
 
     const ro = new ResizeObserver(() => {
-      // keep first card in view
-      holder.scrollLeft = Math.floor(holder.scrollLeft / Math.max(1, holder.clientWidth)) * holder.clientWidth;
+      // Keep first card in view when resized
+      if (isHorizontal()) {
+        holder.scrollLeft = Math.floor(holder.scrollLeft / Math.max(1, holder.clientWidth)) * holder.clientWidth;
+      } else {
+        holder.scrollTop = Math.floor(holder.scrollTop / Math.max(1, holder.clientHeight || 200)) * (holder.clientHeight || 200);
+      }
     });
     ro.observe(holder);
 
     return () => {
-      clearInterval(interval);
+      if (interval) clearInterval(interval);
       try { ro.disconnect(); } catch (e) {}
-      try { holder.removeEventListener('mouseenter', () => (paused = true)); holder.removeEventListener('mouseleave', () => (paused = false)); } catch (e) {}
+      try {
+        holder.removeEventListener('mouseenter', onMouseEnter);
+        holder.removeEventListener('mouseleave', onMouseLeave);
+        holder.removeEventListener('touchstart', onTouchStart);
+        holder.removeEventListener('touchend', onTouchEnd);
+        holder.removeEventListener('keydown', onKey);
+      } catch (e) {}
     };
   }, [matches]);
 
