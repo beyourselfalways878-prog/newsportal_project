@@ -80,6 +80,8 @@ export default async function handler(req, res) {
         detailsUrl,
         team1,
         team2,
+        logo1,
+        logo2,
         isLive,
         rawHtml: html.replace(/<script[\s\S]*?<\/script>/gi, '')
       };
