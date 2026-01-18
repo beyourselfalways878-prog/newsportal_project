@@ -4,6 +4,7 @@ import CategoryMenu from '@/components/sidebar/CategoryMenu';
 import TrendingTopics from '@/components/sidebar/TrendingTopics';
 import NewsletterSubscription from '@/components/sidebar/NewsletterSubscription';
 import AdPlaceholder from '@/components/ads/AdPlaceholder';
+import CricketScoreWidget from '@/components/sports/CricketScoreWidget';
 
 const Sidebar = ({
   currentContent,
@@ -22,6 +23,10 @@ const Sidebar = ({
       transition={{ duration: 0.5, delay: 0.2 }}
       className="hidden lg:block lg:col-span-4 space-y-8 sticky top-24 self-start"
     >
+      {/* Cricket score widget at top */}
+      <div className="flex justify-center">
+        <CricketScoreWidget />
+      </div>
       <CategoryMenu
         categories={Object.entries(currentContent.categories)}
         selectedCategory={selectedCategory}

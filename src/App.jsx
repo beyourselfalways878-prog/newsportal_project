@@ -10,6 +10,7 @@ const CategoryPage = lazy(() => import('@/pages/CategoryPage.jsx'));
 const ArticlePage = lazy(() => import('@/pages/ArticlePage.jsx'));
 const DashboardPage = lazy(() => import('@/pages/DashboardPage.jsx'));
 const ArticleUploaderPage = lazy(() => import('@/pages/ArticleUploaderPage.jsx'));
+const MatchDetailPage = lazy(() => import('@/pages/MatchDetailPage.jsx'));
 
 const PageFallback = () => (
   <div className="flex justify-center items-center min-h-[60vh]">
@@ -27,6 +28,7 @@ const App = () => {
               <Route path="/" element={<HomePage />} />
               <Route path="/category/:categoryKey" element={<CategoryPage />} />
               <Route path="/article/:id" element={<ArticlePage />} />
+              <Route path="/match/:matchId" element={<MatchDetailPage />} />
               <Route
                 path="/dashboard"
                 element={

@@ -4,9 +4,12 @@ import { useAuth } from '@/contexts/SupabaseAuthContext.jsx';
 import { Loader2 } from 'lucide-react';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { profile, loading } = useAuth();
+  const { profile, session, loading } = useAuth();
 
-  if (loading) {
+  const isAllowed = profile && allowedRoles.includes(profile.role);
+
+  // While we have a session but the profile is still loading/rehydrating, keep the gate open with a spinner
+  if (loading || (session && !profile)) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -14,7 +17,11 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     );
   }
 
-  if (!profile || !allowedRoles.includes(profile.role)) {
+  if (!session) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (!isAllowed) {
     return <Navigate to="/" replace />;
   }
 

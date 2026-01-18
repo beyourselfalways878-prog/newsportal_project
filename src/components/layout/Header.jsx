@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Sun, Moon, Search, BellDot, User, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/SupabaseAuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
+import LatestNewsTicker from '@/components/news/LatestNewsTicker';
 
 const Header = ({
   currentContent,
@@ -22,22 +23,9 @@ const Header = ({
 
   return (
     <>
-      {/* Sports ribbon - static */}
-      <div className="ribbon ribbon--sports text-white text-xs md:text-sm">
-        <div className="container mx-auto px-4 flex items-center justify-between py-1">
-          <div className="flex items-center space-x-4">
-            <strong className="mr-2 hidden sm:inline">Sports Live:</strong>
-            <span>Cricket: India 235/6 (44.3 ov)</span>
-            <span className="hidden sm:inline">| Football: Man U 2-1 Chelsea (FT)</span>
-            <span className="hidden lg:inline">| Tennis: Nadal vs Federer — 6-3, 4-6, 2-1</span>
-          </div>
-          <div className="text-right text-xs opacity-90">Updated: {new Date().toLocaleTimeString()}</div>
-        </div>
-      </div>
-
       <header className="sticky top-0 z-50 shadow-2xl bg-gradient-to-r from-rose-500 via-fuchsia-500 to-indigo-600 backdrop-blur-lg border-b border-white/20">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between py-1.5 border-b border-white/20">
+          <div className="flex items-center justify-between py-1 border-b border-white/20">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -116,14 +104,14 @@ const Header = ({
             </motion.div>
           </div>
 
-          <div className="flex items-center justify-between py-2 md:py-4">
+          <div className="flex items-center justify-between py-1.5 md:py-2">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
               <button onClick={onLogoClick} className="block hover:opacity-90 transition-opacity" aria-label="Back to homepage">
-                <span className="text-xl md:text-3xl font-extrabold text-white tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}>
+                <span className="text-lg md:text-2xl font-extrabold text-white tracking-wider" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.25)' }}>
                   {siteName}
                 </span>
               </button>
@@ -156,22 +144,7 @@ const Header = ({
         </div>
       </header>
 
-      {/* Latest news ticker (moving) */}
-      <div className="ribbon ribbon--ticker text-white text-sm">
-        <div className="ribbon__marquee">
-          <div className="ribbon__track">
-            {/* Repeat content to create continuous scroll */}
-            <span className="mx-6">Latest: Market surges as RBI cuts rates — 03:45 PM</span>
-            <span className="mx-6">Breaking: Major cabinet reshuffle announced — 03:30 PM</span>
-            <span className="mx-6">Elections: Candidate XYZ files nomination — 03:10 PM</span>
-            <span className="mx-6">Weather: Heavy rains expected in coastal regions — 02:50 PM</span>
-            <span className="mx-6">Travel: New metro line inaugurated in Delhi — 02:30 PM</span>
-            <span className="mx-6">Latest: Market surges as RBI cuts rates — 03:45 PM</span>
-            <span className="mx-6">Breaking: Major cabinet reshuffle announced — 03:30 PM</span>
-            <span className="mx-6">Elections: Candidate XYZ files nomination — 03:10 PM</span>
-          </div>
-        </div>
-      </div>
+      <LatestNewsTicker />
     </>
   );
 };
