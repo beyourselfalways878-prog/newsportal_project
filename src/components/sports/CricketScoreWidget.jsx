@@ -18,7 +18,35 @@ const CricketScoreWidget = () => {
         if (!res.ok) throw new Error('Fetch failed');
         const json = await res.json();
         if (!mounted) return;
-        setMatches(json.matches || []);
+
+        // Enrich matches client-side if server didn't include logos/shorts
+        const deriveShort = (name) => {
+          if (!name) return '';
+          const parts = name.replace(/[^A-Za-z0-9 ]+/g, '').split(/\s+/).filter(Boolean);
+          if (parts.length === 1) return parts[0].slice(0, 3).toUpperCase();
+          return parts.map(p => p[0]).slice(0,3).join('').toUpperCase();
+        };
+
+        const enriched = (json.matches || []).map(m => {
+          const cleaned = { ...m };
+          // ensure team objects exist
+          cleaned.team1 = cleaned.team1 || { name: '', score: '' };
+          cleaned.team2 = cleaned.team2 || { name: '', score: '' };
+
+          // extract images from rawHtml if missing
+          try {
+            const imgs = Array.from((cleaned.rawHtml || '').matchAll(/<img[^>]*class=['"]criclogo['"][^>]*src=['"]([^'"]+)['"]/gi)).map(a => a[1]);
+            if (!cleaned.team1.logo && imgs[0]) cleaned.team1.logo = imgs[0];
+            if (!cleaned.team2.logo && imgs[1]) cleaned.team2.logo = imgs[1];
+          } catch (e) {}
+
+          if (!cleaned.team1.short) cleaned.team1.short = deriveShort(cleaned.team1.name);
+          if (!cleaned.team2.short) cleaned.team2.short = deriveShort(cleaned.team2.name);
+
+          return cleaned;
+        });
+
+        setMatches(enriched);
       } catch (err) {
         console.error('Error loading cric JSON:', err);
         setError('Unable to load live scores');
