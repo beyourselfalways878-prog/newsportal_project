@@ -1,148 +1,151 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 const CricketScoreWidget = () => {
+  const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const idxRef = useRef(0);
+  const holderRef = useRef(null);
+
   useEffect(() => {
     let mounted = true;
-    const container = document.getElementById('cric_data_live_score');
-    if (!container) return;
 
-    const loading = () => {
-      container.innerHTML = `<div class="flex h-full items-center justify-center text-sm text-slate-500 dark:text-slate-300">Live cricket scores are loading...</div>`;
+    const fetchJson = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('/api/cric-prepscores-json');
+        if (!res.ok) throw new Error('Fetch failed');
+        const json = await res.json();
+        if (!mounted) return;
+        setMatches(json.matches || []);
+      } catch (err) {
+        console.error('Error loading cric JSON:', err);
+        setError('Unable to load live scores');
+        setMatches([]);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const fetchAndRender = async () => {
-      loading();
-      try {
-        const res = await fetch('/api/cric-prepscores');
-        if (!res.ok) throw new Error('Fetch failed');
-        const html = await res.text();
-        if (!mounted) return;
+    fetchJson();
+    const refresh = setInterval(fetchJson, 10000);
 
-        // Inject scoped CSS to protect layout
-        const injectedCSS = `
-          #cric_data_live_score .slideholder{display:flex;overflow:hidden;scroll-behavior:smooth;gap:8px}
-          #cric_data_live_score .slab{box-sizing:border-box;flex:0 0 auto;padding:8px;overflow:hidden;display:flex;align-items:stretch}
-          #cric_data_live_score .slab > div{width:100%;height:100%;overflow:hidden}
-          #cric_data_live_score .slab img.criclogo{max-width:48px;height:auto;display:inline-block;vertical-align:middle}
-          #cric_data_live_score .slab table{width:100%;table-layout:fixed;border-collapse:collapse}
-          #cric_data_live_score .slab td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px}
-          #cric_data_live_score .slab hr{margin:8px 0;border:none;border-top:1px solid #eee}
-        `;
+    return () => {
+      mounted = false;
+      clearInterval(refresh);
+    };
+  }, []);
 
-        // Ensure style tag exists
-        let styleTag = document.getElementById('cric-widget-style');
-        if (!styleTag) {
-          styleTag = document.createElement('style');
-          styleTag.id = 'cric-widget-style';
-          styleTag.appendChild(document.createTextNode(injectedCSS));
-          document.head.appendChild(styleTag);
-        } else {
-          styleTag.textContent = injectedCSS;
-        }
+  // Auto-advance logic
+  useEffect(() => {
+    const holder = holderRef.current;
+    if (!holder || matches.length === 0) return;
 
-        container.innerHTML = html;
+    let paused = false;
+    const doAdvance = () => {
+      const w = holder.clientWidth;
+      if ((holder.scrollLeft + w) >= holder.scrollWidth - 2) {
+        holder.scrollLeft = 0;
+      } else {
+        holder.scrollLeft = holder.scrollLeft + w;
+      }
+    };
 
-        // Post-process: replace "onclick=\"cricapi.showModal('url')\"" with normal links (open in new tab)
-        container.querySelectorAll('[onclick]').forEach((el) => {
-          const onclick = el.getAttribute('onclick');
-          if (!onclick) return;
-          // cricapi.showModal('URL')
-          const modalMatch = onclick.match(/cricapi.showModal\(['\"]([^'\"]+)['\"]\)/i);
-          if (modalMatch) {
-            const url = modalMatch[1];
-            el.setAttribute('href', url);
-            el.setAttribute('target', '_blank');
-            el.removeAttribute('onclick');
-          }
-          // cricapi_setSlide(n)
-          const slideMatch = onclick.match(/cricapi_setSlide\((-?\d+)\)/i);
-          if (slideMatch) {
-            el.removeAttribute('onclick');
-            el.addEventListener('click', (e) => {
-              e.preventDefault();
-              const slideNo = parseInt(slideMatch[1], 10);
-              const slideHolder = container.querySelector('.slideholder');
-              if (!slideHolder) return;
-              const w = slideHolder.clientWidth;
-              slideHolder.scrollLeft = Math.max(0, Math.min(slideHolder.scrollLeft + slideNo * w, slideHolder.scrollWidth - w));
-            });
-          }
-        });
+    const interval = setInterval(() => {
+      if (!paused) doAdvance();
+    }, 5000);
 
-        // Enforce layout and sizes for slide elements (since original widget JS isn't executed)
-        const slideHolder = container.querySelector('.slideholder');
-        if (slideHolder) {
-          // Basic styles to ensure horizontal layout
-          slideHolder.style.display = 'flex';
-          slideHolder.style.overflowX = 'hidden';
-          slideHolder.style.scrollBehavior = 'smooth';
+    holder.addEventListener('mouseenter', () => (paused = true));
+    holder.addEventListener('mouseleave', () => (paused = false));
 
-          const stylize = () => {
-            const widgetWidth = Math.max(280, slideHolder.clientWidth);
-            const widgetHeight = Math.max(220, slideHolder.clientHeight);
-            Array.from(slideHolder.querySelectorAll('.slab')).forEach((s) => {
-              s.style.boxSizing = 'border-box';
-              s.style.flex = '0 0 auto';
-              s.style.width = (widgetWidth - 20) + 'px';
-              s.style.height = (widgetHeight - 20) + 'px';
-              Array.from(s.children).forEach((c) => {
-                if (c.style) {
-                  c.style.width = '100%';
-                  c.style.height = '100%';
-                }
-              });
-            });
-          };
+    const ro = new ResizeObserver(() => {
+      // keep first card in view
+      holder.scrollLeft = Math.floor(holder.scrollLeft / Math.max(1, holder.clientWidth)) * holder.clientWidth;
+    });
+    ro.observe(holder);
 
-          stylize();
+    return () => {
+      clearInterval(interval);
+      try { ro.disconnect(); } catch (e) {}
+      try { holder.removeEventListener('mouseenter', () => (paused = true)); holder.removeEventListener('mouseleave', () => (paused = false)); } catch (e) {}
+    };
+  }, [matches]);
 
-          // Recalculate on resize
-          let ro = null;
-          try {
-            ro = new ResizeObserver(() => stylize());
-            ro.observe(slideHolder);
-            ro.observe(container);
-            window.addEventListener('resize', stylize);
-          } catch (e) {
-            window.addEventListener('resize', stylize);
-          }
+  if (loading) {
+    return (
+      <div className="w-full max-w-[320px] min-w-[280px]">
+        <div className="mx-auto h-[320px] w-full rounded-xl border border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800 flex items-center justify-center text-sm text-slate-500">
+          Loading live scores...
+        </div>
+      </div>
+    );
+  }
 
-          let paused = false;
-          let intervalId = null;
+  if (error) {
+    return (
+      <div className="w-full max-w-[320px] min-w-[280px]">
+        <div className="mx-auto h-[320px] w-full rounded-xl border border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800 flex items-center justify-center text-sm text-destructive">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
-          const doAdvance = () => {
-            const w = slideHolder.clientWidth;
-            if ((slideHolder.scrollLeft + w) >= slideHolder.scrollWidth - 2) {
-              slideHolder.scrollLeft = 0;
-            } else {
-              slideHolder.scrollLeft = slideHolder.scrollLeft + w;
-            }
-          };
+  if (!matches.length) {
+    return (
+      <div className="w-full max-w-[320px] min-w-[280px]">
+        <div className="mx-auto h-[320px] w-full rounded-xl border border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800 flex items-center justify-center text-sm text-slate-500">
+          No live matches right now
+        </div>
+      </div>
+    );
+  }
 
-          slideHolder.addEventListener('mouseenter', () => (paused = true));
-          slideHolder.addEventListener('mouseleave', () => (paused = false));
+  return (
+    <div className="w-full max-w-[320px] min-w-[280px]">
+      <div ref={holderRef} className="slideholder overflow-hidden rounded-xl border border-slate-200 bg-white shadow-md dark:border-slate-700 dark:bg-slate-800" style={{height: 320}}>
+        <div className="flex" style={{gap: 12}}>
+          {matches.map((m) => (
+            <div key={m.id} className="slab p-4 bg-white dark:bg-slate-800 w-[280px] rounded-lg shadow-sm flex flex-col justify-between" style={{minWidth: 280}}>
+              <div>
+                <div className="text-xs text-muted-foreground">{m.matchType?.toUpperCase()} • {m.date}</div>
+                <div className="text-sm font-semibold mt-2 truncate">{m.venue}</div>
+                <div className="mt-2 text-sm text-gray-700 dark:text-gray-200">
+                  <table className="w-full text-sm">
+                    <tbody>
+                      {m.team1 && (
+                        <tr>
+                          <td className="truncate">{m.team1.name}</td>
+                          <td className="text-right font-bold">{m.team1.score}</td>
+                        </tr>
+                      )}
+                      {m.team2 && (
+                        <tr>
+                          <td className="truncate">{m.team2.name}</td>
+                          <td className="text-right font-bold">{m.team2.score}</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-          intervalId = setInterval(() => {
-            if (!paused) doAdvance();
-          }, 5000);
+              <div className="mt-3 flex items-center justify-between">
+                <div className="text-xs text-muted-foreground truncate">{m.status}</div>
+                {m.detailsUrl ? (
+                  <a className="text-xs text-blue-600 hover:underline ml-2" href={m.detailsUrl} target="_blank" rel="noreferrer">Full</a>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
-          // Clean up if the widget updates
-          const observer = new MutationObserver(() => {
-            stylize();
-            slideHolder.scrollLeft = 0;
-          });
-          observer.observe(slideHolder, { childList: true, subtree: true });
-
-          // store cleanup
-          container._cricCleanup = () => {
-            clearInterval(intervalId);
-            observer.disconnect();
-            try {
-              if (ro) ro.disconnect();
-            } catch (e) {}
-            window.removeEventListener('resize', stylize);
-          };
-        }
+export default CricketScoreWidget;
       } catch (err) {
         console.error('Error loading cric data:', err);
         container.innerHTML = `<div class="flex h-full items-center justify-center text-sm text-destructive">Unable to load live scores</div>`;
